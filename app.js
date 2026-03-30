@@ -1,6 +1,9 @@
+require("dotenv").config()
 const express = require("express")
 const connectDB = require("./db")
 const Task = require("./models/Task")
+const authRoutes = require("./routes/auth")
+const protect = require("./middleware/protect")
 
 const app = express()
 
@@ -8,24 +11,27 @@ app.use(express.json())
 
 connectDB()
 
+app.use("/auth", authRoutes)
+
 app.get("/", (req, res) => {
     res.send("Hello from my first server!")
 })
 
-app.get("/tasks", async (req, res) => {
+app.get("/tasks", protect, async (req, res) => {
     try {
-        const tasks = await Task.find()
+        const tasks = await Task.find({ user: req.userId })
         res.json(tasks)
     } catch (error) {
         res.status(500).json({ message: "Something went wrong" })
     }
 })
 
-app.post("/tasks", async (req, res) => {
+app.post("/tasks", protect, async (req, res) => {
     try {
         const task = new Task({
             title: req.body.title,
-            done: req.body.done
+            done: req.body.done,
+            user: req.userId
         })
         await task.save()
         res.status(201).json(task)
@@ -34,7 +40,7 @@ app.post("/tasks", async (req, res) => {
     }
 })
 
-app.put("/tasks/:id", async (req, res) => {
+app.put("/tasks/:id", protect, async (req, res) => {
     try {
         const task = await Task.findByIdAndUpdate(
             req.params.id,
@@ -47,7 +53,7 @@ app.put("/tasks/:id", async (req, res) => {
     }
 })
 
-app.delete("/tasks/:id", async (req, res) => {
+app.delete("/tasks/:id", protect, async (req, res) => {
     try {
         await Task.findByIdAndDelete(req.params.id)
         res.json({ message: "Task deleted successfully" })
@@ -56,6 +62,6 @@ app.delete("/tasks/:id", async (req, res) => {
     }
 })
 
-app.listen(3000, () => {
-    console.log("Server is running on port 3000")
+app.listen(process.env.PORT, () => {
+    console.log("Server is running on port " + process.env.PORT)
 })
