@@ -28,6 +28,10 @@ app.get("/tasks", protect, async (req, res) => {
 
 app.post("/tasks", protect, async (req, res) => {
     try {
+        if (!req.body.title || req.body.title.trim() === "") {
+            return res.status(400).json({ message: "Title is required" })
+        }
+
         const task = new Task({
             title: req.body.title,
             done: req.body.done,
