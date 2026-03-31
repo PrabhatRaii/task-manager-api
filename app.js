@@ -73,10 +73,3 @@ app.delete("/tasks/:id", protect, async (req, res) => {
 app.listen(process.env.PORT, () => {
     console.log("Server is running on port " + process.env.PORT)
 })
-```
-
-Replace everything in your `app.js` with this. Save it. Then run:
-```
-git add .
-git commit -m "fixed cors"
-git push
