@@ -8,7 +8,7 @@ const protect = (req, res, next) => {
             return res.status(401).json({ message: "No token. Access denied." })
         }
 
-        const decoded = jwt.verify(token, "mysecretkey")
+       const decoded = jwt.verify(token, process.env.JWT_SECRET)
         req.userId = decoded.userId
         next()
 
