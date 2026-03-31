@@ -1,11 +1,16 @@
 require("dotenv").config()
 const express = require("express")
+const cors = require("cors")
 const connectDB = require("./db")
 const Task = require("./models/Task")
 const authRoutes = require("./routes/auth")
 const protect = require("./middleware/protect")
 
 const app = express()
+
+app.use(cors({
+    origin: "*"
+}))
 
 app.use(express.json())
 
@@ -31,7 +36,6 @@ app.post("/tasks", protect, async (req, res) => {
         if (!req.body.title || req.body.title.trim() === "") {
             return res.status(400).json({ message: "Title is required" })
         }
-
         const task = new Task({
             title: req.body.title,
             done: req.body.done,
@@ -69,3 +73,10 @@ app.delete("/tasks/:id", protect, async (req, res) => {
 app.listen(process.env.PORT, () => {
     console.log("Server is running on port " + process.env.PORT)
 })
+```
+
+Replace everything in your `app.js` with this. Save it. Then run:
+```
+git add .
+git commit -m "fixed cors"
+git push
